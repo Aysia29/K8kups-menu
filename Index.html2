@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>K8 Kups Menu</title>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Nunito:ital,wght@0,400;0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pink:    #FF6B9D;
+    --orange:  #FF9A5C;
+    --yellow:  #FFD166;
+    --green:   #06D6A0;
+    --purple:  #A78BFA;
+    --indigo:  #818CF8;
+    --cream:   #FFF8F2;
+    --dark:    #1E0A2E;
+    --text:    #3a1a2e;
+    --muted:   #b08aa0;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: var(--cream);
+    font-family: 'Nunito', sans-serif;
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── BACKGROUND BLOBS ── */
+  .bg-blobs {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
+  }
+  .blob {
+    position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.18;
+  }
+  .blob-1 { width:500px;height:500px;background:var(--pink);   top:-100px; left:-100px; }
+  .blob-2 { width:400px;height:400px;background:var(--purple); bottom:-80px; right:-80px; }
+  .blob-3 { width:300px;height:300px;background:var(--yellow); top:40%; left:60%; }
+  .blob-4 { width:250px;height:250px;background:var(--green);  top:20%; right:5%; }
+
+  /* ── LAYOUT ── */
+  .page { position:relative; z-index:1; max-width: 900px; margin:0 auto; padding: 0 20px 60px; }
+
+  /* ── HEADER ── */
+  header {
+    text-align: center;
+    padding: 48px 20px 36px;
+    position: relative;
+  }
+
+  .logo-lockup {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    animation: fadeDown 0.7s ease both;
+  }
+
+  /* mini mug svg in header */
+  .header-mugs { width: 120px; height: 86px; margin-bottom: -6px; }
+
+  .brand-name {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    line-height: 1;
+  }
+  .brand-k8   { font-family:'Pacifico',cursive; font-size:58px; background:linear-gradient(135deg,var(--pink),var(--orange)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  .brand-kups { font-family:'Pacifico',cursive; font-size:58px; background:linear-gradient(135deg,var(--purple),var(--indigo)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+
+  .cherry-mid { display:inline-block; transform:translateY(-16px); margin:0 3px; }
+  .cherry-mid svg { width:30px; height:38px; }
+
+  .header-tag {
+    font-size: 10px; font-weight:900; letter-spacing:5px; text-transform:uppercase;
+    color: var(--muted); margin-top:2px;
+  }
+
+  .header-divider {
+    display:flex; align-items:center; gap:10px;
+    margin: 18px auto 0; width: fit-content;
+  }
+  .hdiv-line { width:60px; height:2px; border-radius:2px; background:linear-gradient(90deg,transparent,var(--pink)); }
+  .hdiv-line.r { background:linear-gradient(90deg,var(--purple),transparent); }
+  .hdiv-dots { display:flex; gap:5px; }
+  .hdiv-dot  { width:7px;height:7px;border-radius:50%; }
+
+  /* ── CATEGORY SECTION ── */
+  .category {
+    margin-bottom: 44px;
+    animation: fadeUp 0.6s ease both;
+  }
+  .category:nth-child(1) { animation-delay:.1s }
+  .category:nth-child(2) { animation-delay:.2s }
+  .category:nth-child(3) { animation-delay:.3s }
+  .category:nth-child(4) { animation-delay:.4s }
+
+  .cat-header {
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 20px;
+  }
+  .cat-pill {
+    padding: 8px 22px; border-radius: 999px;
+    font-family: 'Pacifico', cursive; font-size: 18px;
+    color: white; white-space: nowrap;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+  }
+  .cat-line { flex:1; height:2px; border-radius:2px; opacity:0.2; }
+
+  .cat-cakes  .cat-pill { background: linear-gradient(135deg,var(--pink),var(--orange)); }
+  .cat-cakes  .cat-line { background: var(--pink); }
+  .cat-pastry .cat-pill { background: linear-gradient(135deg,var(--orange),var(--yellow)); }
+  .cat-pastry .cat-line { background: var(--orange); }
+  .cat-lattes .cat-pill { background: linear-gradient(135deg,var(--purple),var(--indigo)); }
+  .cat-lattes .cat-line { background: var(--purple); }
+
+  /* ── ITEM GRID ── */
+  .item-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 14px;
+  }
+
+  .item-card {
+    background: white;
+    border-radius: 20px;
+    padding: 18px 20px;
+    display: flex; align-items: center; gap: 14px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+    transition: transform .2s ease, box-shadow .2s ease;
+    cursor: default;
+    position: relative;
+    overflow: hidden;
+  }
+  .item-card::before {
+    content:''; position:absolute; left:0;top:0;bottom:0;width:4px;
+    border-radius:4px 0 0 4px;
+  }
+  .item-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 28px rgba(0,0,0,0.10);
+  }
+
+  .cat-cakes  .item-card::before { background: linear-gradient(180deg,var(--pink),var(--orange)); }
+  .cat-pastry .item-card::before { background: linear-gradient(180deg,var(--orange),var(--yellow)); }
+  .cat-lattes .item-card::before { background: linear-gradient(180deg,var(--purple),var(--indigo)); }
+
+  .item-emoji {
+    font-size: 28px; line-height:1;
+    flex-shrink:0;
+    width: 44px; height:44px;
+    display:flex; align-items:center; justify-content:center;
+    border-radius:12px;
+  }
+  .cat-cakes  .item-emoji { background:#fff0f5; }
+  .cat-pastry .item-emoji { background:#fff8ee; }
+  .cat-lattes .item-emoji { background:#f5f0ff; }
+
+  .item-info { flex:1; min-width:0; }
+  .item-name {
+    font-weight: 900; font-size: 14.5px; line-height:1.25;
+    color: var(--text);
+  }
+  .item-desc {
+    font-size: 11.5px; font-weight:600; font-style:italic;
+    color: var(--muted); margin-top:2px; line-height:1.3;
+  }
+
+  .item-price {
+    font-family:'Pacifico',cursive; font-size:15px;
+    flex-shrink:0;
+  }
+  .cat-cakes  .item-price { color:var(--pink); }
+  .cat-pastry .item-price { color:var(--orange); }
+  .cat-lattes .item-price { color:var(--purple); }
+
+  /* ── SPECIAL BADGE ── */
+  .badge {
+    font-size:9px; font-weight:900; letter-spacing:2px; text-transform:uppercase;
+    padding:2px 8px; border-radius:999px; color:white;
+    margin-left:6px; vertical-align:middle;
+  }
+  .badge-new  { background:var(--green); }
+  .badge-hot  { background:var(--pink); }
+  .badge-fan  { background:var(--orange); }
+
+  /* ── FOOTER BAND ── */
+  .footer-band {
+    background: var(--dark);
+    border-radius: 28px;
+    padding: 32px 36px;
+    display: flex; flex-direction:column; align-items:center; gap:12px;
+    margin-top: 20px;
+    animation: fadeUp .6s ease .5s both;
+  }
+  .footer-title {
+    font-family:'Pacifico',cursive; font-size:22px;
+    background:linear-gradient(135deg,var(--pink),var(--yellow),var(--green));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  }
+  .footer-info {
+    font-size:12px; font-weight:700; color:#a08898;
+    letter-spacing:2px; text-transform:uppercase; text-align:center; line-height:1.8;
+  }
+  .footer-pills {
+    display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-top:4px;
+  }
+  .fpill {
+    font-size:11px; font-weight:900; padding:6px 16px; border-radius:999px;
+    letter-spacing:1px; text-transform:uppercase;
+  }
+  .fpill-1 { background:#FF6B9D22; color:var(--pink); border:1.5px solid #FF6B9D44; }
+  .fpill-2 { background:#A78BFA22; color:var(--purple); border:1.5px solid #A78BFA44; }
+  .fpill-3 { background:#06D6A022; color:var(--green); border:1.5px solid #06D6A044; }
+
+  .footer-note {
+    font-size:10px; color:#604858; font-weight:700;
+    text-align:center; margin-top:4px; line-height:1.6;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeDown { from{opacity:0;transform:translateY(-20px)} to{opacity:1;transform:none} }
+  @keyframes fadeUp   { from{opacity:0;transform:translateY(20px)}  to{opacity:1;transform:none} }
+
+  /* ── RESPONSIVE ── */
+  @media(max-width:520px){
+    .brand-k8,.brand-kups { font-size:44px; }
+    .item-grid { grid-template-columns:1fr; }
+    .cat-pill  { font-size:15px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-blobs">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+  <div class="blob blob-4"></div>
+</div>
+
+<div class="page">
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo-lockup">
+
+      <!-- Mini two-mug logo -->
+      <svg class="header-mugs" viewBox="0 0 240 86" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- left mug tilted -->
+        <g transform="rotate(-16,70,58)">
+          <rect x="22" y="28" width="80" height="66" rx="11" fill="url(#hmlL)"/>
+          <rect x="18" y="22" width="88" height="12" rx="6" fill="#FF8FB8"/>
+          <path d="M102 36 Q128 36 128 54 Q128 72 102 72" stroke="#FF6B9D" stroke-width="8" stroke-linecap="round" fill="none"/>
+          <ellipse cx="62" cy="22" rx="36" ry="9" fill="#fff5fa"/>
+          <ellipse cx="62" cy="16" rx="28" ry="13" fill="white"/>
+          <circle cx="58" cy="8" r="8" fill="#e74c3c"/><circle cx="56" cy="6" r="3" fill="white" opacity=".45"/>
+          <path d="M62 14 Q68 7 74 11 Q68 16 62 14Z" fill="#5a9e4e"/>
+        </g>
+        <!-- right mug tilted -->
+        <g transform="rotate(16,170,58)">
+          <rect x="138" y="28" width="80" height="66" rx="11" fill="url(#hmlR)"/>
+          <rect x="134" y="22" width="88" height="12" rx="6" fill="#b0a0f8"/>
+          <path d="M138 36 Q112 36 112 54 Q112 72 138 72" stroke="#A78BFA" stroke-width="8" stroke-linecap="round" fill="none"/>
+          <ellipse cx="178" cy="22" rx="36" ry="9" fill="#f5f0ff"/>
+          <ellipse cx="178" cy="16" rx="28" ry="13" fill="white"/>
+          <circle cx="174" cy="8" r="8" fill="#c0392b"/><circle cx="172" cy="6" r="3" fill="white" opacity=".45"/>
+          <path d="M178 14 Q184 7 190 11 Q184 16 178 14Z" fill="#4a8a3e"/>
+        </g>
+        <!-- cherry center top -->
+        <path d="M120 32 Q124 20 128 12" stroke="#4a7c3f" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+        <path d="M120 32 Q116 20 112 12" stroke="#4a7c3f" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+        <circle cx="110" cy="9" r="9" fill="url(#hchL)"/><circle cx="108" cy="7" r="3" fill="white" opacity=".4"/>
+        <circle cx="130" cy="9" r="9" fill="url(#hchR)"/><circle cx="128" cy="7" r="3" fill="white" opacity=".4"/>
+        <path d="M120 26 Q126 18 134 22 Q126 28 120 26Z" fill="#5a9e4e"/>
+        <path d="M120 26 Q114 18 106 22 Q114 28 120 26Z" fill="#4a8a3e"/>
+        <defs>
+          <linearGradient id="hmlL" x1="22" y1="28" x2="102" y2="94" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#FF6B9D"/><stop offset="100%" stop-color="#c084cf"/></linearGradient>
+          <linearGradient id="hmlR" x1="138" y1="28" x2="218" y2="94" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#A78BFA"/><stop offset="100%" stop-color="#06D6A0"/></linearGradient>
+          <radialGradient id="hchL" cx="38%" cy="32%"><stop offset="0%" stop-color="#ff7c7c"/><stop offset="100%" stop-color="#c0392b"/></radialGradient>
+          <radialGradient id="hchR" cx="38%" cy="32%"><stop offset="0%" stop-color="#ff6b6b"/><stop offset="100%" stop-color="#a93226"/></radialGradient>
+        </defs>
+      </svg>
+
+      <!-- Brand name with cherry inline -->
+      <div class="brand-name">
+        <span class="brand-k8">K8</span>
+        <span class="cherry-mid">
+          <svg viewBox="0 0 40 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20 30 Q24 16 28 8" stroke="#4a7c3f" stroke-width="3" stroke-linecap="round" fill="none"/>
+            <path d="M20 30 Q16 16 12 8" stroke="#4a7c3f" stroke-width="3" stroke-linecap="round" fill="none"/>
+            <circle cx="10" cy="6" r="7" fill="url(#ci1)"/><circle cx="8" cy="4" r="2.5" fill="white" opacity=".45"/>
+            <circle cx="30" cy="6" r="7" fill="url(#ci2)"/><circle cx="28" cy="4" r="2.5" fill="white" opacity=".45"/>
+            <path d="M20 22 Q25 14 32 18 Q25 24 20 22Z" fill="#5a9e4e"/>
+            <path d="M20 22 Q15 14 8 18 Q15 24 20 22Z" fill="#4a8a3e"/>
+            <defs>
+              <radialGradient id="ci1" cx="38%" cy="32%"><stop offset="0%" stop-color="#ff7c7c"/><stop offset="100%" stop-color="#c0392b"/></radialGradient>
+              <radialGradient id="ci2" cx="38%" cy="32%"><stop offset="0%" stop-color="#ff6b6b"/><stop offset="100%" stop-color="#a93226"/></radialGradient>
+            </defs>
+          </svg>
+        </span>
+        <span class="brand-kups">Kups</span>
+      </div>
+
+      <span class="header-tag">Homemade · Handcrafted · Texas</span>
+
+      <div class="header-divider">
+        <div class="hdiv-line"></div>
+        <div class="hdiv-dots">
+          <div class="hdiv-dot" style="background:var(--pink)"></div>
+          <div class="hdiv-dot" style="background:var(--orange)"></div>
+          <div class="hdiv-dot" style="background:var(--yellow)"></div>
+          <div class="hdiv-dot" style="background:var(--green)"></div>
+          <div class="hdiv-dot" style="background:var(--purple)"></div>
+        </div>
+        <div class="hdiv-line r"></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ══════════════════════════════ -->
+  <!-- KUPS — CAKE IN A CUP         -->
+  <!-- ══════════════════════════════ -->
+  <section class="category cat-cakes">
+    <div class="cat-header">
+      <div class="cat-pill">🍰 Kups — Cake by the Slice</div>
+      <div class="cat-line"></div>
+    </div>
+    <div class="item-grid">
+
+      <div class="item-card">
+        <div class="item-emoji">🍓</div>
+        <div class="item-info">
+          <div class="item-name">Chantilly Cake <span class="badge badge-fan">Fan Fav</span></div>
+          <div class="item-desc">Vanilla sponge, berry chantilly cream, fresh fruit</div>
+        </div>
+        <div class="item-price">$8</div>
+      </div>
+
+      <div class="item-card">
+        <div class="item-emoji">🍫</div>
+        <div class="item-info">
+          <div class="item-name">Chocolate Drop</div>
+          <div class="item-desc">Rich dark chocolate cake, ganache drip, fudge cream</div>
+        </div>
+        <div class="item-price">$8</div>
+      </div>
+
+      <div class="item-card">
+        <div class="item-emoji">🍋</div>
+        <div class="item-info">
+          <div class="item-name">Lemon Paradise</div>
+          <div class="item-desc">Zesty lemon cake, lemon curd, whipped cream</div>
+        </div>
+        <div class="item-price">$8</div>
+      </div>
+
+      <div class="item-card">
+        <div class="item-emoji">🥛</div>
+        <div class="item-info">
+          <div class="item-name">Tres Leches <span class="badge badge-hot">🔥</span></div>
+          <div class="item-desc">Classic three-milk soak, cinnamon, fresh cream</div>
+        </div>
+        <div class="item-price">$8</div>
+      </div>
+
+      <div class="item-card">
+        <div class="item-emoji">💜</div>
+        <div class="item-info">
+          <div class="item-name">Ube Dream <span class="badge badge-new">New</span></div>
+          <div class="item-desc">Purple yam cake, coconut cream, white chocolate</div>
+        </div>
+        <div class="item-price">$9</div>
+      </div>
+
+      <div class="item-card">
+        <div class="item-emoji">🌸</div>
+        <div class="item-info">
+          <div class="item-name">Pink Panther</div>
+          <div class="item-desc">Strawberry velvet, pink vanilla buttercream</div>
+        </div>
+        <div class="item-price">$8</div>
+      </div>
+
+      <div class="item-card">
+        <div class="item-emoji">🍵</div>
+        <div class="item-info">
+          <div class="item-name">Matcha Lover <span class="badge badge-new">New</span></div>
+          <div class="item-desc">Ceremonial matcha cake, white chocolate ganache</div>
+        </div>
+        <div class="item-price">$9</div>
+      </div>
+
+      <div class="item-card">
+        <div class="item-emoji">🍈</div>
+        <div class="item-info">
+          <div class="item-name">Lime Lizzard</div>
+          <div class="item-desc">Key lime cake, tart lime curd, toasted coconut</div>
+        </div>
+        <div class="item-price">$8</div>
+      </div>
+
+      <div class="item-card">
+        <div class="item-emoji">💐</div>
+        <div class="item-info">
+          <div class="item-name">Lavender Kisses</div>
+          <div class="item-desc">Honey lavender cake, vanilla cloud cream</div>
+        </div>
+        <div class="item-price">$9</div>
+      </div>
+
+      <div class="item-card">
+        <div class="item-emoji">🍎</div>
+        <div class="item-info">
+          <div class="item-name">Caramel Apple</div>
+          <div class="item-desc">Spiced apple cake, salted caramel, brown butter cream</div>
+        </div>
+        <div class="item-price">$9</div>
+      </div>
+
+      <div class="item-card">
+        <div class="item-emoji">☕</div>
+        <div class="item-info">
+          <div class="item-name">Lemon Masseuse</div>
+          <div class="item-desc">Lemon tiramisu — espresso, mascarpone, lemon zest</div>
+        </div>
+        <div class="item-price">$10</div>
+      </div>
+
+    </div>
+
+    <!-- Slice box upsell -->
+    <div style="margin-top:16px; background:linear-gradient(135deg,#fff0f5,#fff5ee); border-radius:16px; padding:16px 20px; display:flex; align-items:center; gap:16px; border:1.5px dashed #FFB3D1;">
+      <div style="font-size:22px">🎁</div>
+      <div>
+        <div style="font-weight:900; font-size:13.5px; color:var(--text)">Build Your Own Slice Box</div>
+        <div style="font-size:12px; color:var(--muted); font-weight:600; margin-top:2px">2-slice box $15 &nbsp;·&nbsp; 4-slice box $28 &nbsp;·&nbsp; 6-slice sampler $40</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════ -->
+  <!-- PUFF PASTRY                   -->
+  <!-- ══════════════════════════════ -->
+  <section class="category cat-pastry">
+    <div class="cat-header">
+      <div class="cat-pill">🥐 Puff Pastry Desserts</div>
+      <div class="cat-line"></div>
+    </div>
+    <div class="item-grid">
+
+      <div class="item-card">
+        <div class="item-emoji">🍭</div>
+        <div class="item-info">
+          <div class="item-name">Pastry Pop-Tarts <span class="badge badge-hot">Viral</span></div>
+          <div class="item-desc">Flaky puff pastry, seasonal jam, iced & sprinkled</div>
+        </div>
+        <div class="item-price">$6</div>
+      </div>
+
+      <div class="item-card">
+        <div class="item-emoji">🧁</div>
+        <div class="item-info">
+          <div class="item-name">Cookie Butter Danish</div>
+          <div class="item-desc">Puff pastry swirl, speculoos cream, cinnamon drizzle</div>
+        </div>
+        <div class="item-price">$6</div>
+      </div>
+
+      <div class="item-card">
+        <div class="item-emoji">🍌</div>
+        <div class="item-info">
+          <div class="item-name">Bananza Tart</div>
+          <div class="item-desc">Caramelized banana, pastry cream, puff shell</div>
+        </div>
+        <div class="item-price">$6</div>
+      </div>
+
+      <div class="item-card">
+        <div class="item-emoji">🌺</div>
+        <div class="item-info">
+          <div class="item-name">Sweet Floral Tart</div>
+          <div class="item-desc">Rose & hibiscus pastry cream, puff pastry shell</div>
+        </div>
+        <div class="item-price">$7</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════ -->
+  <!-- ICED LATTES & MATCHA          -->
+  <!-- ══════════════════════════════ -->
+  <section class="category cat-lattes">
+    <div class="cat-header">
+      <div class="cat-pill">☕ Iced Lattes & Matcha</div>
+      <div class="cat-line"></div>
+    </div>
+    <div class="item-grid">
+
+      <div class="item-card">
+        <div class="item-emoji">🤎</div>
+        <div class="item-info">
+          <div class="item-name">Classic Brown Sugar Latte</div>
+          <div class="item-desc">Espresso, brown sugar syrup, oat milk, cinnamon foam</div>
+        </div>
+        <div class="item-price">$8</div>
+      </div>
+
+      <div class="item-card">
+        <div class="item-emoji">🍓</div>
+        <div class="item-info">
+          <div class="item-name">Strawberry Matcha <span class="badge badge-fan">Fan Fav</span></div>
+          <div class="item-desc">Ceremonial matcha, fresh strawberry purée, milk</div>
+        </div>
+        <div class="item-price">$9</div>
+      </div>
+
+      <div class="item-card">
+        <div class="item-emoji">🫐</div>
+        <div class="item-info">
+          <div class="item-name">Raspberry Matcha</div>
+          <div class="item-desc">Ceremonial matcha, raspberry syrup, oat milk</div>
+        </div>
+        <div class="item-price">$9</div>
+      </div>
+
+      <div class="item-card">
+        <div class="item-emoji">🍵</div>
+        <div class="item-info">
+          <div class="item-name">Vanilla Matcha Latte <span class="badge badge-new">New</span></div>
+          <div class="item-desc">Smooth matcha, vanilla bean, steamed milk</div>
+        </div>
+        <div class="item-price">$9</div>
+      </div>
+
+    </div>
+
+    <div style="margin-top:14px; background:#f5f0ff; border-radius:14px; padding:13px 18px; font-size:12px; font-weight:700; color:#9061c2; border:1.5px dashed #d8b4fe;">
+      ⚠️ Drinks are made to order for pickup &amp; local delivery only · In-person sales at events
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <div class="footer-band">
+    <div class="footer-title">How to Order</div>
+    <div class="footer-pills">
+      <div class="fpill fpill-1">📱 DM on Facebook</div>
+      <div class="fpill fpill-2">💬 Text to Order 254-389-0086</div>
+      <div class="fpill fpill-3">📍 Home Pickup · Delivery</div>
+    </div>
+    <div class="footer-info">
+      Pre-orders only &nbsp;·&nbsp; Pay in advance to reserve your Kup<br>
+      Pickup: Fridays &amp; Saturdays &nbsp;·&nbsp; Delivery within 5 miles (+$6 fee)
+    </div>
+    <div class="footer-note">
+      This food is made in a home kitchen and is not inspected by the Department of State Health Services or a local health department.<br>
+      Minimum order $30 for delivery · Texas Cottage Food Operation
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
